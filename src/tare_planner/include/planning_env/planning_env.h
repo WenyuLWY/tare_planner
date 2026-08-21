@@ -146,7 +146,8 @@ public:
   }
 
   template <class PCLPointType>
-  void UpdateKeyposeCloud(typename pcl::PointCloud<PCLPointType>::Ptr& keypose_cloud)
+  void UpdateKeyposeCloud(typename pcl::PointCloud<PCLPointType>::Ptr& keypose_cloud,
+                          typename pcl::PointCloud<PCLPointType>::Ptr& lod_cloud)
   {
     if (keypose_cloud->points.empty())
     {
@@ -156,10 +157,12 @@ public:
     else
     {
       pcl::copyPointCloud<PCLPointType, PlannerCloudPointType>(*keypose_cloud, *(keypose_cloud_->cloud_));
+      pcl::copyPointCloud<PCLPointType, PlannerCloudPointType>(*lod_cloud, *(lod_cloud_->cloud_));
 
       if (parameters_.kUseCoverageBoundaryOnObjectSurface)
       {
         GetCoverageCloudWithinBoundary<PlannerCloudPointType>(keypose_cloud_->cloud_);
+        GetCoverageCloudWithinBoundary<PlannerCloudPointType>(lod_cloud_->cloud_);
       }
 
       // Extract surface of interest
@@ -173,6 +176,7 @@ public:
 
       pointcloud_manager_->UpdateOldCloudPoints();
       pointcloud_manager_->UpdatePointCloud<PlannerCloudPointType>(*(vertical_surface_cloud_->cloud_));
+      // pointcloud_manager_->UpdatePointCloud<PlannerCloudPointType>(*(lod_cloud_->cloud_));
       pointcloud_manager_->UpdateCoveredCloudPoints();
 
       planner_cloud_->cloud_->clear();
@@ -290,6 +294,8 @@ public:
   {
     return planner_cloud_->cloud_;
   }
+  // void AddLodCoveragePoints(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud);
+  // void MergeLodCoveragePoints();
   void UpdateCoveredArea(const lidar_model_ns::LiDARModel& robot_viewpoint,
                          const std::shared_ptr<viewpoint_manager_ns::ViewPointManager>& viewpoint_manager);
 
@@ -316,6 +322,7 @@ private:
   Eigen::Vector3d prev_robot_position_;
   bool robot_position_update_;
   std::unique_ptr<pointcloud_utils_ns::PCLCloud<PlannerCloudPointType>> keypose_cloud_;
+  std::unique_ptr<pointcloud_utils_ns::PCLCloud<PlannerCloudPointType>> lod_cloud_;
   std::unique_ptr<pointcloud_utils_ns::PCLCloud<PlannerCloudPointType>> stacked_cloud_;
   std::unique_ptr<pointcloud_utils_ns::PCLCloud<PlannerCloudPointType>> stacked_vertical_surface_cloud_;
   pcl::KdTreeFLANN<PlannerCloudPointType>::Ptr stacked_vertical_surface_cloud_kdtree_;

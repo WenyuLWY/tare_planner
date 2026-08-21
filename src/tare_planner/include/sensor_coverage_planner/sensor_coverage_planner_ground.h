@@ -115,6 +115,7 @@ struct PlannerData
 {
   // PCL clouds TODO: keypose cloud does not need to be PlannerCloudPointType
   std::unique_ptr<pointcloud_utils_ns::PCLCloud<PlannerCloudPointType>> keypose_cloud_;
+  std::unique_ptr<pointcloud_utils_ns::PCLCloud<PlannerCloudPointType>> lod_cloud_;
   std::unique_ptr<pointcloud_utils_ns::PCLCloud<pcl::PointXYZ>> registered_scan_stack_;
   std::unique_ptr<pointcloud_utils_ns::PCLCloud<pcl::PointXYZI>> registered_cloud_;
   std::unique_ptr<pointcloud_utils_ns::PCLCloud<pcl::PointXYZI>> large_terrain_cloud_;
@@ -219,6 +220,8 @@ private:
   ros::Subscriber nogo_boundary_sub_;
   ros::Subscriber joystick_sub_;
   ros::Subscriber reset_waypoint_sub_;
+  ros::Subscriber lod_point_sub_;
+
 
   // ROS publishers
   ros::Publisher global_path_full_publisher_;
@@ -246,6 +249,7 @@ private:
   void NogoBoundaryCallback(const geometry_msgs::PolygonStampedConstPtr& polygon_msg);
   void JoystickCallback(const sensor_msgs::Joy::ConstPtr& joy_msg);
   void ResetWaypointCallback(const std_msgs::Empty::ConstPtr& empty_msg);
+  void LodPointCallback(const sensor_msgs::PointCloud2ConstPtr& lod_point_msg);
 
   void SendInitialWaypoint();
   void UpdateKeyposeGraph();

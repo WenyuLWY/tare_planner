@@ -71,6 +71,8 @@ PlanningEnv::PlanningEnv(ros::NodeHandle nh, ros::NodeHandle nh_private, std::st
   }
   keypose_cloud_ =
       std::make_unique<pointcloud_utils_ns::PCLCloud<PlannerCloudPointType>>(nh, "keypose_cloud", world_frame_id);
+  lod_cloud_ = 
+      std::make_unique<pointcloud_utils_ns::PCLCloud<PlannerCloudPointType>>(nh, "lod_cloud", world_frame_id);
   stacked_cloud_ =
       std::make_unique<pointcloud_utils_ns::PCLCloud<PlannerCloudPointType>>(nh, "stacked_cloud", world_frame_id);
   stacked_vertical_surface_cloud_ = std::make_unique<pointcloud_utils_ns::PCLCloud<PlannerCloudPointType>>(
@@ -261,9 +263,52 @@ bool PlanningEnv::InCollision(double x, double y, double z) const
   }
 }
 
+// void PlanningEnv::AddLodCoveragePoints(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud)
+// {
+//   if (!cloud || cloud->empty())
+//   {
+//     return;
+//   }
+
+//   lod_planner_points_.clear();
+//   for (const auto& point : cloud->points)
+//   {
+//     PlannerCloudPointType lod_point;
+//     lod_point.x = point.x;
+//     lod_point.y = point.y;
+//     lod_point.z = point.z;
+//     lod_point.r = 0;
+//     lod_point.g = 0;
+//     lod_point.b = 255;
+//     lod_point.normal_x = 0.0;
+//     lod_point.normal_y = 0.0;
+//     lod_point.normal_z = 1.0;
+//     lod_planner_points_.push_back(lod_point);
+//   }
+// }
+
+// void PlanningEnv::MergeLodCoveragePoints()
+// {
+//   if (lod_planner_points_.empty())
+//   {
+//     return;
+//   }
+
+//   for (const auto& point : lod_planner_points_)
+//   {
+//     planner_cloud_->cloud_->points.push_back(point);
+//   }
+// }
+
 void PlanningEnv::UpdateCoveredArea(const lidar_model_ns::LiDARModel& robot_viewpoint,
                                     const std::shared_ptr<viewpoint_manager_ns::ViewPointManager>& viewpoint_manager)
 {
+  //输出 planner_cloud_->cloud_->points.size()
+  // std::cout << "1. planner_cloud_->cloud_->points.size(): " << planner_cloud_->cloud_->points.size() << std::endl;
+  // MergeLodCoveragePoints();
+  // std::cout << "2. planner_cloud_->cloud_->points.size(): " << planner_cloud_->cloud_->points.size() << std::endl;
+
+
   if (planner_cloud_->cloud_->points.empty())
   {
     std::cout << "Planning cloud empty, cannot update covered area" << std::endl;

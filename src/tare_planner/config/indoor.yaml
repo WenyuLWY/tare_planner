@@ -104,8 +104,10 @@ kGridWorldYNum : 121
 kGridWorldZNum : 121
 kGridWorldCellHeight : 3.0
 kGridWorldNearbyGridNum : 5
-kMinAddPointNumSmall : 40
-kMinAddPointNumBig : 60
+# kMinAddPointNumSmall : 40
+# kMinAddPointNumBig : 60
+kMinAddPointNumSmall : 2
+kMinAddPointNumBig : 16
 kMinAddFrontierPointNum : 20
 kCellExploringToCoveredThr : 1
 kCellCoveredToExploringThr: 10

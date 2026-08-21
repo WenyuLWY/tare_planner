@@ -72,6 +72,8 @@ void PlannerData::Initialize(ros::NodeHandle& nh, ros::NodeHandle& nh_p)
 {
   keypose_cloud_ =
       std::make_unique<pointcloud_utils_ns::PCLCloud<PlannerCloudPointType>>(nh, "keypose_cloud", kWorldFrameID);
+  lod_cloud_ = 
+      std::make_unique<pointcloud_utils_ns::PCLCloud<PlannerCloudPointType>>(nh, "lod_cloud", kWorldFrameID);
   registered_scan_stack_ =
       std::make_unique<pointcloud_utils_ns::PCLCloud<pcl::PointXYZ>>(nh, "registered_scan_stack", kWorldFrameID);
   registered_cloud_ =
@@ -218,7 +220,9 @@ bool SensorCoveragePlanner3D::initialize(ros::NodeHandle& nh, ros::NodeHandle& n
       nh.subscribe(pp_.sub_joystick_topic_, 1, &SensorCoveragePlanner3D::JoystickCallback, this);
   reset_waypoint_sub_ =
       nh.subscribe(pp_.sub_reset_waypoint_topic_, 1, &SensorCoveragePlanner3D::ResetWaypointCallback, this);
-
+  
+  lod_point_sub_ = nh.subscribe("/FilteringMappingNodelet/pcd_density_map", 1, &SensorCoveragePlanner3D::LodPointCallback, this);
+  
   global_path_full_publisher_ = nh.advertise<nav_msgs::Path>("global_path_full", 1);
   global_path_publisher_ = nh.advertise<nav_msgs::Path>("global_path", 1);
   old_global_path_publisher_ = nh.advertise<nav_msgs::Path>("old_global_path", 1);
@@ -237,6 +241,16 @@ bool SensorCoveragePlanner3D::initialize(ros::NodeHandle& nh, ros::NodeHandle& n
   return true;
 }
 
+void SensorCoveragePlanner3D::LodPointCallback(const sensor_msgs::PointCloud2ConstPtr& lod_point_msg)
+{
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>());
+  pcl::fromROSMsg(*lod_point_msg, *cloud);
+  // pd_.planning_env_->AddLodCoveragePoints(cloud);
+  // std::vector<PlannerCloudPointType> lod_planner_points_;
+  pd_.lod_cloud_->cloud_->clear();
+  pcl::copyPointCloud(*cloud, *(pd_.lod_cloud_->cloud_));
+
+}
 void SensorCoveragePlanner3D::ExplorationStartCallback(const std_msgs::Bool::ConstPtr& start_msg)
 {
   if (start_msg->data)
@@ -611,7 +625,7 @@ void SensorCoveragePlanner3D::UpdateGlobalRepresentation()
   {
     pd_.planning_env_->SetUseFrontier(false);
   }
-  pd_.planning_env_->UpdateKeyposeCloud<PlannerCloudPointType>(pd_.keypose_cloud_->cloud_);
+  pd_.planning_env_->UpdateKeyposeCloud<PlannerCloudPointType>(pd_.keypose_cloud_->cloud_,pd_.lod_cloud_->cloud_);
 
   int closest_node_ind = pd_.keypose_graph_->GetClosestNodeInd(pd_.robot_position_);
   geometry_msgs::Point closest_node_position = pd_.keypose_graph_->GetClosestNodePosition(pd_.robot_position_);
