@@ -176,7 +176,7 @@ public:
 
       pointcloud_manager_->UpdateOldCloudPoints();
       pointcloud_manager_->UpdatePointCloud<PlannerCloudPointType>(*(vertical_surface_cloud_->cloud_));
-      // pointcloud_manager_->UpdatePointCloud<PlannerCloudPointType>(*(lod_cloud_->cloud_));
+      pointcloud_manager_->UpdatePointCloud<PlannerCloudPointType>(*(lod_cloud_->cloud_));
       pointcloud_manager_->UpdateCoveredCloudPoints();
 
       planner_cloud_->cloud_->clear();
