@@ -183,8 +183,12 @@ void PlanningEnv::UpdateFrontiers()
       {
         GetCoverageCloudWithinBoundary<pcl::PointXYZI>(frontier_cloud_->cloud_);
       }
-      vertical_frontier_extractor_.ExtractVerticalSurface<pcl::PointXYZI, pcl::PointXYZI>(
-          frontier_cloud_->cloud_, filtered_frontier_cloud_->cloud_);
+      // vertical_frontier_extractor_.ExtractVerticalSurface<pcl::PointXYZI, pcl::PointXYZI>(
+      //     frontier_cloud_->cloud_, filtered_frontier_cloud_->cloud_);
+      *(filtered_frontier_cloud_->cloud_) = *(frontier_cloud_->cloud_);
+      pcl::PointCloud<pcl::PointXYZI>::Ptr lod_cloud_tmp(new pcl::PointCloud<pcl::PointXYZI>());
+      pcl::copyPointCloud<PlannerCloudPointType, pcl::PointXYZI>(*(lod_cloud_->cloud_), *lod_cloud_tmp);
+      *(filtered_frontier_cloud_->cloud_)+= *lod_cloud_tmp;
     }
 
     // Cluster frontiers
