@@ -185,10 +185,28 @@ void PlanningEnv::UpdateFrontiers()
       }
       // vertical_frontier_extractor_.ExtractVerticalSurface<pcl::PointXYZI, pcl::PointXYZI>(
       //     frontier_cloud_->cloud_, filtered_frontier_cloud_->cloud_);
-      *(filtered_frontier_cloud_->cloud_) = *(frontier_cloud_->cloud_);
+
+      // *(filtered_frontier_cloud_->cloud_) = *(frontier_cloud_->cloud_);
+      // pcl::PointCloud<pcl::PointXYZI>::Ptr lod_cloud_tmp(new pcl::PointCloud<pcl::PointXYZI>());
+      // pcl::copyPointCloud<PlannerCloudPointType, pcl::PointXYZI>(*(lod_cloud_->cloud_), *lod_cloud_tmp);
+      // *(filtered_frontier_cloud_->cloud_)+= *lod_cloud_tmp;
+      
+
+      pcl::PointCloud<pcl::PointXYZI>::Ptr merged_cloud(new pcl::PointCloud<pcl::PointXYZI>());
+      *merged_cloud = *(frontier_cloud_->cloud_);
       pcl::PointCloud<pcl::PointXYZI>::Ptr lod_cloud_tmp(new pcl::PointCloud<pcl::PointXYZI>());
       pcl::copyPointCloud<PlannerCloudPointType, pcl::PointXYZI>(*(lod_cloud_->cloud_), *lod_cloud_tmp);
-      *(filtered_frontier_cloud_->cloud_)+= *lod_cloud_tmp;
+      *merged_cloud += *lod_cloud_tmp;
+      // vertical_frontier_extractor_.ExtractVerticalSurface<pcl::PointXYZI, pcl::PointXYZI>(
+      //     merged_cloud, filtered_frontier_cloud_->cloud_);
+      *(filtered_frontier_cloud_->cloud_) = *(merged_cloud);
+      // pcl::VoxelGrid<pcl::PointXYZI> voxel_filter;
+      // voxel_filter.setInputCloud(merged_cloud);
+      // float voxel_size = 0.5f;
+      // voxel_filter.setLeafSize(voxel_size, voxel_size, voxel_size);
+      // voxel_filter.filter(*(filtered_frontier_cloud_->cloud_));
+      // std::cout << "filtered_frontier_cloud_->cloud_->points.size(): " << filtered_frontier_cloud_->cloud_->points.size()<< std::endl;
+
     }
 
     // Cluster frontiers

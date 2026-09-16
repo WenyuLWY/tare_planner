@@ -245,6 +245,13 @@ void SensorCoveragePlanner3D::LodPointCallback(const sensor_msgs::PointCloud2Con
 {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>());
   pcl::fromROSMsg(*lod_point_msg, *cloud);
+
+  // pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZ>);
+  // pcl::VoxelGrid<pcl::PointXYZ> voxel_filter;
+  // voxel_filter.setInputCloud(cloud);
+  // voxel_filter.setLeafSize(0.15f, 0.15f, 0.15f);
+  // voxel_filter.filter(*cloud_filtered);
+
   // pd_.planning_env_->AddLodCoveragePoints(cloud);
   // std::vector<PlannerCloudPointType> lod_planner_points_;
   pd_.lod_cloud_->cloud_->clear();
