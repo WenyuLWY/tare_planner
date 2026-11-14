@@ -1,0 +1,91 @@
+# density_frontier_planner / default parameters
+# All values are overridable from the launch file with <param> tags.
+
+world_frame: map
+autostart: true
+density_stale_sec: 5.0        # hold the current path if msp stops publishing
+log_period_sec: 5.0
+initial_waypoint_dist: 8.0    # cold-start waypoint until the first density map
+finish_hysteresis_cycles: 5   # avoid a premature "finished" latch
+publish_grid_debug: false
+grid_debug_half_size: 20.0
+
+topics:
+  # msp / FilteringMappingNodelet (latched, full re-publish on every map update)
+  density_cloud: /FilteringMappingNodelet/pcd_density_map
+  odom: /state_estimation_at_scan
+  scan: /registered_scan                # used to ray-cast a three-state grid
+  map_cloud: ""                         # set to /FilteringMappingNodelet/pcd_map to also mark obstacles
+  # Recommended extra input from msp: nav_msgs/OccupancyGrid, -1 unknown / 0 free / 100 occupied.
+  # If it is present it takes priority over the ray-cast fallback.
+  occupancy_grid: /msp/occupancy_grid
+  # Optional: tare's clustered frontier cloud, or an msp-published frontier cloud.
+  frontier_cloud: ""
+  waypoint: /way_point                  # geometry_msgs/PointStamped, consumed by local_planner
+  path: viewpoint_path                 # nav_msgs/Path, visualization / external executor
+  move_base_goal: /move_base_simple/goal
+  start: /start_exploration
+
+frontier:
+  enable: true
+  use_external_cloud: false            # true = cluster frontier_cloud instead of grid frontiers
+  min_cluster_size: 6                  # connected FREE-with-UNKNOWN-neighbour cells
+  min_unknown_neighbors: 2
+  max_range: 15.0
+  max_targets: 12
+  weight: 1.0                          # density points are the primary driver
+  distance_scale: 12.0
+  cluster_cell_size: 0.6               # only used with use_external_cloud
+
+grid:
+  resolution: 0.3
+  occupied_threshold: 65               # costmap value >= this is occupied
+  ray_max_range: 20.0
+  ray_bins: 360
+  obstacle_min_height: 0.25            # relative to robot z; filters ground points
+  obstacle_max_height: 2.0
+  prune_radius: 60.0
+  max_cells: 200000
+
+density:
+  anchor_cell_size: 1.5                # spatial de-duplication / stable target id
+  min_observation_cycles: 2            # temporal de-duplication of transient points
+  missing_cycles_to_forget: 5          # point disappeared from the msp map => solved
+  abandoned_forget_cycles: 30
+  min_support_points: 1
+  max_targets: 24
+  weight: 3.0
+  distance_scale: 12.0
+  service_radius: 2.5                  # robot got close enough to re-scan the point
+  service_release_ratio: 1.5
+  service_settle_sec: 6.0              # still published after this => failed service
+  max_failures: 3                      # then the target is declared un-coverable
+  cooldown_base_sec: 8.0
+  cooldown_max_sec: 120.0
+  fail_penalty: 2.0
+  centroid_smoothing: 0.3
+
+viewpoint:
+  radii: "1.5,3.0"                     # candidate ring around each target
+  angle_bins: 12
+  max_viewpoint_dist: 12.0            # CMU local_planner wants nearby waypoints
+  effective_range: 5.0
+  max_z_diff: 3.0
+  min_separation: 0.8
+  max_selected: 5
+  require_los: true                    # auto-degrades until the grid has enough FREE cells
+  distance_penalty: 0.35
+  turn_penalty: 0.15
+  min_gain: 0.02
+  height_above_ground: 0.0
+
+path:
+  lookahead_dist: 3.5                  # same order as tare's kExtendWayPointDistanceSmall
+  goal_tolerance: 0.6
+  path_point_spacing: 0.5
+  replan_interval_sec: 1.0            # planning timer period
+  max_replan_interval_sec: 5.0        # force a re-plan so new density points are picked up
+  stall_sec: 8.0
+  stall_distance: 0.3
+  waypoint_rate: 10.0
+  publish_move_base_goal: false       # set true if move_base is the executor

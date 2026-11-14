@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>density_frontier_planner</name>
+  <version>0.1.0</version>
+  <description>
+    Standalone density-point + frontier driven exploration planner. Subscribes
+    to msp's continuously re-published density map, de-duplicates and gives up
+    on un-coverable points, combines classic occupancy-grid frontiers, and
+    emits a viewpoint path as /way_point for the CMU local_planner.
+  </description>
+  <maintainer email="wenyulwy@gmail.com">Wenyu Li</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>roscpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>visualization_msgs</depend>
+
+  <export>
+  </export>
+</package>

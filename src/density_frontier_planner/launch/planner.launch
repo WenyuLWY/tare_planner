@@ -1,0 +1,22 @@
+<launch>
+  <!--
+    Standalone replacement for tare_planner's high-level planner.
+
+    Start the simulator / msp first, then:
+      roslaunch density_frontier_planner planner.launch
+
+    Only /way_point is required by the executor (CMU local_planner).
+    Everything else is either an optional input or a debug output.
+  -->
+  <arg name="config" default="$(find density_frontier_planner)/config/planner.yaml"/>
+  <arg name="autostart" default="true"/>
+  <arg name="output" default="screen"/>
+  <arg name="use_external_frontier" default="false"/>
+
+  <node pkg="density_frontier_planner" type="density_frontier_planner_node"
+        name="density_frontier_planner" output="$(arg output)">
+    <rosparam command="load" file="$(arg config)"/>
+    <param name="autostart" value="$(arg autostart)"/>
+    <param name="frontier/use_external_cloud" value="$(arg use_external_frontier)"/>
+  </node>
+</launch>
