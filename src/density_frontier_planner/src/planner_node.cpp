@@ -124,14 +124,14 @@ PlannerNode::PlannerNode(const ros::NodeHandle& nh, const ros::NodeHandle& pnh)
   goal_pub_ = nh_.advertise<geometry_msgs::PoseStamped>(
       params_.topics.move_base_goal, 1);
   density_target_pub_ = nh_.advertise<sensor_msgs::PointCloud2>(
-      "density_targets", 1);
+      "dfp/density_targets", 1);
   frontier_target_pub_ = nh_.advertise<sensor_msgs::PointCloud2>(
-      "frontier_targets", 1);
+      "dfp/frontier_targets", 1);
   viewpoint_pub_ = nh_.advertise<visualization_msgs::MarkerArray>(
-      "viewpoint_markers", 1);
-  grid_debug_pub_ = nh_.advertise<nav_msgs::OccupancyGrid>("grid_debug", 1);
-  status_pub_ = nh_.advertise<std_msgs::String>("status", 1);
-  finish_pub_ = nh_.advertise<std_msgs::Bool>("exploration_finished", 1, true);
+      "dfp/viewpoint_markers", 1);
+  grid_debug_pub_ = nh_.advertise<nav_msgs::OccupancyGrid>("dfp/grid_debug", 1);
+  status_pub_ = nh_.advertise<std_msgs::String>("dfp/status", 1);
+  finish_pub_ = nh_.advertise<std_msgs::Bool>("dfp/exploration_finished", 1, true);
 
   const double replan_period = std::max(0.2, params_.path.replan_interval_sec);
   const double waypoint_period =

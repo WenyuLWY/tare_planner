@@ -22,7 +22,7 @@ topics:
   # Optional: tare's clustered frontier cloud, or an msp-published frontier cloud.
   frontier_cloud: ""
   waypoint: /way_point                  # geometry_msgs/PointStamped, consumed by local_planner
-  path: viewpoint_path                 # nav_msgs/Path, visualization / external executor
+  path: dfp/viewpoint_path             # nav_msgs/Path, visualization / external executor
   move_base_goal: /move_base_simple/goal
   start: /start_exploration
 
