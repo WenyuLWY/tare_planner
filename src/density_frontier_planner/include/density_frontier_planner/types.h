@@ -101,7 +101,7 @@ struct TopicParams {
   std::string occupancy_grid = "/msp/occupancy_grid";
   std::string frontier_cloud = "/sensor_coverage_planner/filtered_frontier_cloud";
   std::string waypoint = "/way_point";
-  std::string path = "viewpoint_path";
+  std::string path = "dfp/viewpoint_path";
   std::string move_base_goal = "/move_base_simple/goal";
   std::string start = "/start_exploration";
 };
