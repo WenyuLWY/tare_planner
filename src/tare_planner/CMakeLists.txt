@@ -23,7 +23,7 @@ find_package(catkin REQUIRED COMPONENTS
   pcl_ros
 )
 
-find_package(PCL REQUIRED)
+find_package(PCL QUIET REQUIRED)
 find_package(Eigen3 REQUIRED)
 
 catkin_package(
@@ -47,7 +47,7 @@ include_directories(
 link_directories(
   /usr/local/lib # Location when using 'make system_install'
   /usr/lib       # More usual location (e.g. when installing using a package)
-  or-tools/lib
+#  or-tools/lib
 )
 
 add_library(lidar_model src/lidar_model/lidar_model.cpp)
